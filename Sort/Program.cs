@@ -16,40 +16,79 @@ namespace ConsoleApp1
 
         static void Main(string[] args)
         {
-            Rule[] rules = { IncreaseArray, DecreasingArray, HalfArray, RandomArray, NinetyPercentArray };
-            Sort[] sorts = { ShakeSort };
+            Rule[] types = { Increase, Decreasing, Half, Random, NinetyPercent };
+            Sort[] sorts = { BubbleSort, InputSort, SelectionSort, ShakeSort };
+            int[] arr;
 
             Console.WriteLine("Введите длинну массива");
             int len = int.Parse(Console.ReadLine());
-            Console.WriteLine("Выводить на консоль массивы?  0 - нет, 1 - да");
-            int ans = int.Parse(Console.ReadLine());
 
             Stopwatch timer = Stopwatch.StartNew();
-            int[] arr;
 
-            foreach (var rule in rules)
+            //Таблица значений
+            string[,] excel = new string[types.Length + 1, sorts.Length + 2];
+            excel[0, 0] = string.Format("Тип");
+            excel[0, 1] = string.Format("Создавался");
+            for (int i = 2; i < excel.GetLength(1); i++)
+            {
+                excel[0, i] = string.Format(sorts[i - 2].Method.Name);
+            }
+
+            for (int i = 1; i < excel.GetLength(0); i++)
+            {
+                excel[i, 0] = string.Format(types[i - 1].Method.Name);
+            }
+
+            int row = 1, column = 1;
+            PrintInfo(excel, len);
+            foreach (var rule in types)
             {
                 timer.Start();
                 arr = GenerateMassive(rule, len);
                 timer.Stop();
-                Console.WriteLine("Тип: " + rule.Method.Name + " - создавался " + timer.ElapsedMilliseconds);
+
+                excel[row, column] = string.Format("{0,15}", timer.ElapsedMilliseconds);
+                column++;
+
+                PrintInfo(excel, len);
+
                 timer.Reset();
-                if (ans == 1)
-                    Console.WriteLine(String.Join(" ", arr));
                 foreach (var sort in sorts)
                 {
                     timer.Start();
                     sort(arr);
                     timer.Stop();
-                    Console.WriteLine(sort.Method.Name + " - " + timer.ElapsedMilliseconds);
+
+                    excel[row, column] = string.Format("{0,15}", timer.ElapsedMilliseconds);
+                    column++;
+
                     timer.Restart();
-                    if (ans == 1)
-                        Console.WriteLine(String.Join(" ", arr));
+
+                    PrintInfo(excel, len);
+                }
+                column = 1;
+                row++;
+            }
+
+        }
+
+        static void PrintInfo(string[,] matrica, int len)
+        {
+            Console.Clear();
+            Console.WriteLine("Все вычисления в миллисекундах.  Длинна массива: " + len);
+            PrintTable(matrica);  
+        }
+
+        static void PrintTable(string[,] matrica)
+        {
+            for (int i = 0; i < matrica.GetLength(0); i++)
+            {
+                for (int j = 0; j < matrica.GetLength(1); j++)
+                {
+                    Console.Write("|{0,-15}", matrica[i, j]);
                 }
                 Console.WriteLine();
             }
-            //  Console.WriteLine(string.Join(",", array));
-           
         }
 
         //Сортировка Пузырьком
@@ -154,7 +193,7 @@ namespace ConsoleApp1
 
 
         //Рандомный массив
-        static int[] RandomArray(int length, int min = 0, int max = 0)
+        static int[] Random(int length, int min = 0, int max = 0)
         {
             int[] array = new int[length];
             max = length;
@@ -167,7 +206,7 @@ namespace ConsoleApp1
         }
 
         //По возрастанию
-        static int[] IncreaseArray(int length, int min, int max)
+        static int[] Increase(int length, int min, int max)
         {
             int[] arr = new int[length];
             Random rnd = new Random();
@@ -184,7 +223,7 @@ namespace ConsoleApp1
         }
 
         //Убывающий массив
-        static int[] DecreasingArray(int length, int min, int max)
+        static int[] Decreasing(int length, int min, int max)
         {
             int[] array = new int[length];
             for (int i = 0; i < length; i++)
@@ -195,7 +234,7 @@ namespace ConsoleApp1
         }
 
         //первая половина убывает, вторая возрастает
-        static int[] HalfArray(int length, int min = 0, int max = 0)
+        static int[] Half(int length, int min = 0, int max = 0)
         {
             int[] array = new int[length];
             max = length;
@@ -215,7 +254,7 @@ namespace ConsoleApp1
         }
 
         //Массив где много одинаковых значений
-        static int[] NinetyPercentArray(int length, int min = 0, int max = 0)
+        static int[] NinetyPercent(int length, int min = 0, int max = 0)
         {
             int[] array = new int[length];
             max = length;
@@ -236,6 +275,8 @@ namespace ConsoleApp1
 
         static int[] GenerateMassive(Rule rule, int length, int min = 0, int max = 0)
         {
+            if (min == max)
+                max = length;
             int[] massive = rule(length, min, max);
             return massive;
         }
