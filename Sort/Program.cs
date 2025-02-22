@@ -19,6 +19,7 @@ namespace ConsoleApp1
             Rule[] types = { Increase, Decreasing, Half, Random, NinetyPercent };
             Sort[] sorts = { BubbleSort, InputSort, SelectionSort, ShakeSort };
             int[] arr;
+            var dict = new Dictionary<Sort, List<double>>();
 
             Console.WriteLine("Введите длинну массива");
             int len = int.Parse(Console.ReadLine());
@@ -26,26 +27,30 @@ namespace ConsoleApp1
             Stopwatch timer = Stopwatch.StartNew();
 
             //Таблица значений
-            string[,] excel = new string[types.Length + 1, sorts.Length + 2];
+            string[,] excel = new string[types.Length + 2, sorts.Length + 2];
             excel[0, 0] = string.Format("Тип");
             excel[0, 1] = string.Format("Создавался");
+            excel[excel.GetLength(0)-1, 0] = string.Format("Сред. время");
+
             for (int i = 2; i < excel.GetLength(1); i++)
             {
                 excel[0, i] = string.Format(sorts[i - 2].Method.Name);
             }
 
-            for (int i = 1; i < excel.GetLength(0); i++)
+            for (int i = 1; i < excel.GetLength(0)-1; i++)
             {
                 excel[i, 0] = string.Format(types[i - 1].Method.Name);
             }
 
             int row = 1, column = 1;
+            double createAverageTime = 0 ;
             PrintInfo(excel, len);
             foreach (var rule in types)
             {
                 timer.Start();
                 arr = GenerateMassive(rule, len);
                 timer.Stop();
+                createAverageTime += Convert.ToDouble(timer.ElapsedMilliseconds.ToString());
 
                 excel[row, column] = string.Format("{0,15}", timer.ElapsedMilliseconds);
                 column++;
@@ -58,6 +63,10 @@ namespace ConsoleApp1
                     timer.Start();
                     sort(arr);
                     timer.Stop();
+                    if (!dict.ContainsKey(sort))
+                        dict.Add(sort, new List<double> { Convert.ToDouble(timer.ElapsedMilliseconds.ToString()) });
+                    else
+                        dict[sort].Add(Convert.ToDouble(timer.ElapsedMilliseconds.ToString()));
 
                     excel[row, column] = string.Format("{0,15}", timer.ElapsedMilliseconds);
                     column++;
@@ -69,9 +78,31 @@ namespace ConsoleApp1
                 column = 1;
                 row++;
             }
+            column = 2;
+            row = excel.GetLength(0) - 1;
+            foreach (var sort in sorts)
+            {
+                excel[row,column] = AverageTime(dict[sort]).ToString();
+                column++;
+            }
+            excel[row, 1] = (createAverageTime / types.Length).ToString();
+            PrintInfo(excel, len);
 
         }
 
+
+        static double AverageTime(List<double> arr)
+        {
+            
+            double sum = 0;
+            foreach (var item in arr)
+            {
+                sum+= item;
+            }
+            if (sum == 0)
+                return 0;
+            return sum / arr.Count;
+        }
         static void PrintInfo(string[,] matrica, int len)
         {
             Console.Clear();
