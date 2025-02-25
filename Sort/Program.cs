@@ -17,13 +17,13 @@ namespace ConsoleApp1
         static void Main(string[] args)
         {
             Rule[] types = { Increasing, Decreasing, Half, Random, NinetyPercent };
-            Sort[] sorts = { QuickSort, InputSort, ShellSort, ShakeSort };//, SelectionSort, BubbleSort//  };
+            Sort[] sorts = { QuickSort, ShellSort, InputSort,  SelectionSort, ShakeSort, BubbleSort };
             var dict = new Dictionary<Sort, List<double>>();
 
             Console.WriteLine("Введите длинну массива");
             int len = int.Parse(Console.ReadLine());
             int min = 0;
-            int max = len * 10;
+            int max = len * 2;
             int[] arr;
             int[] arayForTests = new int[len];
             Stopwatch timer = Stopwatch.StartNew();
@@ -44,7 +44,7 @@ namespace ConsoleApp1
                 excel[i, 0] = string.Format(types[i - 1].Method.Name);
             }
             int row = 1, column = 1;
-            double createAverageTime = 0;
+            double creatingAverageTime = 0;
             #endregion
 
             #region Заносим данные в таблицу и выводим
@@ -54,7 +54,7 @@ namespace ConsoleApp1
                 timer.Start();
                 arr = GenerateMassive(rule, len, min, max);
                 timer.Stop();
-                createAverageTime += Convert.ToDouble(timer.ElapsedMilliseconds.ToString());
+                creatingAverageTime += Convert.ToDouble(timer.ElapsedMilliseconds.ToString());
 
                 excel[row, column] = string.Format("{0,14}", timer.ElapsedMilliseconds);
                 column++;
@@ -94,9 +94,10 @@ namespace ConsoleApp1
                 excel[row, column] = AverageTime(dict[sort]).ToString();
                 column++;
             }
-            excel[row, 1] = (createAverageTime / types.Length).ToString();
+            excel[row, 1] = (creatingAverageTime / types.Length).ToString();
             PrintInfo(excel, len);
             #endregion
+
         }
 
         #region Методы для вывода таблица
@@ -284,8 +285,8 @@ namespace ConsoleApp1
                         minIndex = j;
                     }
                 }
-                int temp = arr[0];
-                arr[0] = arr[minIndex];
+                int temp = arr[i];
+                arr[i] = arr[minIndex];
                 arr[minIndex] = temp;
             }
         }
@@ -309,12 +310,11 @@ namespace ConsoleApp1
             int[] arr = new int[length];
 
             arr[0] = rnd.Next(min, max + 1);
-            if (length > 1)
-                for (int i = 1; i < length; i++)
-                {
-                    // Генерируем следующее число больше предыдущего, но в пределах max
-                    arr[i] = rnd.Next(arr[i - 1], max);
-                }
+            for (int i = 1; i < length; i++)
+            {
+                // Генерируем следующее число больше предыдущего
+                arr[i] = rnd.Next(arr[i - 1], arr[i - 1] + 100);
+            }
 
             return arr;
         }
@@ -327,7 +327,7 @@ namespace ConsoleApp1
             array[0] = max;
             for (int i = 1; i < len; i++)
             {
-                array[i] = rnd.Next(array[i - 1] / 2 + array[i - 1] / 4, array[i - 1]);
+                array[i] = rnd.Next(array[i-1] - 100, array[i-1]);
             }
             return array;
         }
@@ -339,7 +339,7 @@ namespace ConsoleApp1
             int extra = length % 2; // 1, если нечётное количество элементов
             int[] array = new int[length];
             int[] decreasingArr = Decreasing(halfLength + extra, min, max);
-            int[] increasingArr = Increasing(halfLength+extra, min, max);
+            int[] increasingArr = Increasing(halfLength + extra, min, max);
             for (int i = 0; i < halfLength + extra; i++)
             {
                 array[i] = decreasingArr[i];
