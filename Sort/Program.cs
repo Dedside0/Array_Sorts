@@ -118,7 +118,7 @@ namespace ConsoleApp1
         static void PrintInfo(string[,] matrica, int len)
         {
             Console.Clear();
-            Console.WriteLine("Все вычисления в миллисекундах.  Длинна массива: " + len);
+            Console.WriteLine("Все вычисления в миллисекундах.  Длинна массива: " + len + "\n");
             PrintTable(matrica);
         }
         //Вывести таблицу
