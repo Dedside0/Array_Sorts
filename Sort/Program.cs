@@ -16,6 +16,7 @@ namespace ConsoleApp1
 
         static void Main(string[] args)
         {
+            
             Rule[] types = { Increasing, Decreasing, Half, Random, NinetyPercent };
             Sort[] sorts = { QuickSort, ShellSort, InputSort,  SelectionSort, ShakeSort, BubbleSort };
             var dict = new Dictionary<Sort, List<double>>();
@@ -101,6 +102,7 @@ namespace ConsoleApp1
         }
 
         #region Методы для вывода таблица
+        //посчитать среднее время
         static double AverageTime(List<double> arr)
         {
             double sum = 0;
@@ -112,14 +114,14 @@ namespace ConsoleApp1
                 return 0;
             return sum / arr.Count;
         }
-
+        //очистить консоль и вывести таблицу
         static void PrintInfo(string[,] matrica, int len)
         {
             Console.Clear();
             Console.WriteLine("Все вычисления в миллисекундах.  Длинна массива: " + len);
             PrintTable(matrica);
         }
-
+        //Вывести таблицу
         static void PrintTable(string[,] matrica)
         {
             for (int i = 0; i < matrica.GetLength(0); i++)
@@ -135,6 +137,28 @@ namespace ConsoleApp1
             }
         }
         #endregion
+
+
+        /// <summary>
+        /// Генерирует массив указанного типо
+        /// </summary>
+        /// <param name="rule">Тип массива (убывающий, возрастаюший, и т.д.</param>
+        /// <param name="length">длина массива</param>
+        /// <param name="min">минимальный элемент</param>
+        /// <param name="max">максимальный элемента</param>
+        /// <returns></returns>
+        static int[] GenerateMassive(Rule rule, int length, int min, int max)
+        {
+            int[] massive;
+
+            if (min > max)
+                massive = rule(length, max, min);
+            else
+                massive = rule(length, min, max);
+
+            return massive;
+        }
+
 
         //Сортировка Пузырьком
         static void BubbleSort(int[] arr)
@@ -155,12 +179,12 @@ namespace ConsoleApp1
             }
         }
 
+        //Быстрая сортировка
         static void QuickSort(int[] arr)
         {
             QuickSortInPlace(arr, 0, arr.Length - 1);
         }
-
-        private static void QuickSortInPlace(int[] arr, int left, int right)
+        static void QuickSortInPlace(int[] arr, int left, int right)
         {
             if (left >= right) return;
 
@@ -179,7 +203,6 @@ namespace ConsoleApp1
                     j--;
                 }
             }
-
             // Рекурсивно сортируем левую и правую части
             if (left < j) QuickSortInPlace(arr, left, j);
             if (i < right) QuickSortInPlace(arr, i, right);
@@ -369,16 +392,5 @@ namespace ConsoleApp1
             return array;
         }
 
-        static int[] GenerateMassive(Rule rule, int length, int min, int max)
-        {
-            int[] massive;
-
-            if (min > max)
-                massive = rule(length, max, min);
-            else
-                massive = rule(length, min, max);
-
-            return massive;
-        }
     }
 }
